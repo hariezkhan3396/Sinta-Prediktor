@@ -3,108 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SINTA Analyzer Expert - Penilaian ARJUNA</title>
+    <title>SINTA Predictor Pro - Dashboard Dosen</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .loader { border-top-color: #6366f1; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="p-4 md:p-10 min-h-screen">
 
     <div class="max-w-5xl mx-auto">
         <div class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">SINTA <span class="text-indigo-600">Expert Predictor</span></h1>
-            <p class="text-slate-500 mt-3 font-medium">Berdasarkan Standar Akreditasi ARJUNA (Permenristekdikti No. 9 Tahun 2018)</p>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">SINTA <span class="text-indigo-600">Predictor Pro</span></h1>
+            <p class="text-slate-500 mt-2 font-medium">Alat Bantu Pemetaan Akreditasi Manuskrip Dosen Indonesia</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-7">
-                <div class="glass border border-slate-200 rounded-3xl p-6 shadow-xl shadow-slate-200/50">
-                    <label class="block mb-4 text-sm font-bold text-slate-700 uppercase tracking-wider">Input Manuskrip Artikel:</label>
-                    <textarea id="inputText" class="w-full h-[500px] p-5 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none text-sm leading-relaxed transition-all mb-4 bg-slate-50/50" placeholder="Tempelkan (Paste) draf artikel lengkap Anda di sini..."></textarea>
+                <div class="glass border border-slate-200 rounded-3xl p-6 shadow-xl">
+                    <label class="block mb-4 text-sm font-bold text-slate-700 uppercase tracking-widest">Tempel Manuskrip Artikel:</label>
+                    <textarea id="inputText" class="w-full h-[450px] p-5 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none text-sm leading-relaxed mb-4 bg-slate-50/50" placeholder="Paste draf artikel (Judul, Abstrak, Isi, hingga Referensi)..."></textarea>
                     
-                    <button onclick="analyzeText()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 rounded-2xl transition-all shadow-lg shadow-indigo-200 active:scale-95 flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Analisis Kelayakan SINTA
+                    <button onclick="analyzeText()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 rounded-2xl transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                        🚀 Jalankan Analisis ARJUNA
                     </button>
                 </div>
             </div>
 
             <div class="lg:col-span-5">
-                <div id="welcomeMessage" class="h-full flex flex-col items-center justify-center text-center p-10 bg-slate-100/50 rounded-3xl border-2 border-dashed border-slate-200">
-                    <p class="text-slate-400 font-medium">Hasil analisis akan muncul di sini setelah Anda memasukkan teks artikel.</p>
+                <div id="welcomeMessage" class="h-full flex flex-col items-center justify-center text-center p-10 bg-white rounded-3xl border-2 border-dashed border-slate-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-200 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p class="text-slate-400 font-medium">Hasil analisis otomatis akan muncul di panel ini.</p>
                 </div>
 
-                <div id="resultArea" class="hidden glass border border-slate-200 rounded-3xl p-8 shadow-2xl shadow-slate-200/60 sticky top-10">
-                    <div class="text-center mb-8">
-                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Prediksi Akreditasi</p>
-                        <h2 id="resLevel" class="text-5xl font-black mb-4 italic">SINTA ?</h2>
-                        <div id="scoreBadge" class="inline-block px-6 py-2 rounded-full text-white font-bold text-xl shadow-md">
+                <div id="resultArea" class="hidden glass border border-slate-200 rounded-3xl p-8 shadow-2xl sticky top-10">
+                    <div class="text-center mb-6">
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Estimasi Peringkat</p>
+                        <h2 id="resLevel" class="text-5xl font-black mb-4 tracking-tighter italic">-</h2>
+                        <div id="scoreBadge" class="inline-block px-8 py-2 rounded-full text-white font-bold text-lg">
                             SKOR: <span id="scoreValue">0</span>
                         </div>
                     </div>
 
-                    <div class="space-y-4 mb-8">
-                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <span class="text-sm font-semibold text-slate-500 italic">Bahasa & Novelty</span>
-                            <span id="statNovelty" class="text-sm font-bold text-slate-800">-</span>
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <p class="text-[10px] text-slate-400 font-black uppercase">Bahasa</p>
+                            <p id="statLang" class="font-bold text-slate-700 text-sm">-</p>
                         </div>
-                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <span class="text-sm font-semibold text-slate-500 italic">Struktur IMRAD</span>
-                            <span id="statImrad" class="text-sm font-bold text-slate-800">-</span>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <p class="text-[10px] text-slate-400 font-black uppercase">Sitasi Unik</p>
+                            <p id="statRefs" class="font-bold text-slate-700 text-sm">-</p>
                         </div>
-                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <span class="text-sm font-semibold text-slate-500 italic">Sitasi Unik</span>
-                            <span id="statRefs" class="text-sm font-bold text-slate-800">-</span>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <p class="text-[10px] text-slate-400 font-black uppercase">Struktur</p>
+                            <p id="statImrad" class="font-bold text-slate-700 text-sm">-</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <p class="text-[10px] text-slate-400 font-black uppercase">Novelty</p>
+                            <p id="statNovelty" class="font-bold text-slate-700 text-sm">-</p>
                         </div>
                     </div>
 
-                    <div id="adviceCard" class="p-6 rounded-2xl border-l-8 bg-indigo-50 border-indigo-500">
-                        <h4 class="font-black text-indigo-900 mb-2 text-xs uppercase tracking-widest">Catatan Reviewer:</h4>
-                        <p id="adviceText" class="text-sm text-indigo-800 leading-relaxed"></p>
+                    <div id="adviceCard" class="p-5 rounded-2xl border-l-4">
+                        <h4 class="font-bold text-slate-800 mb-1 text-xs uppercase tracking-wider">Rekomendasi Strategis:</h4>
+                        <p id="adviceText" class="text-sm text-slate-600 leading-relaxed italic"></p>
                     </div>
 
-                    <button onclick="location.reload()" class="w-full mt-8 text-slate-400 hover:text-slate-600 text-xs font-bold uppercase transition-colors">Analisis Ulang</button>
+                    <button onclick="location.reload()" class="w-full mt-8 py-3 text-slate-400 hover:text-indigo-600 text-xs font-bold uppercase transition-all">Analisis Ulang</button>
                 </div>
             </div>
         </div>
 
-        <div class="mt-16 text-center">
-            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-loose">
-                Tools ini dikembangkan untuk komunitas akademik Indonesia <br>
-                Sesuai dengan kriteria evaluasi substansi artikel ilmiah ARJUNA
-            </p>
+        <div class="mt-12 text-center text-slate-400 text-[10px] uppercase font-bold tracking-[0.3em]">
+            Pedamping Publikasi Dosen • ARJUNA Compliant
         </div>
     </div>
 
     <script>
         function analyzeText() {
             const text = document.getElementById('inputText').value;
-            if (text.length < 300) return alert("Teks artikel Anda terlalu pendek untuk analisis ARJUNA.");
+            if (text.length < 300) return alert("Masukkan teks draf artikel Anda terlebih dahulu.");
 
             document.getElementById('welcomeMessage').classList.add('hidden');
-            const resultArea = document.getElementById('resultArea');
-            resultArea.classList.remove('hidden');
+            document.getElementById('resultArea').classList.remove('hidden');
 
             const lowerText = text.toLowerCase();
             const words = text.trim().split(/\s+/).length;
             let score = 0;
 
-            // 1. SUBSTANSI & NOVELTY (Max 40)
-            const isEnglish = /abstract|research|methodology|background/.test(lowerText) && !/abstrak|penelitian|latar belakang/.test(lowerText);
-            const highNovelty = /state-of-the-art|novelty|originality|eksperimen kompleks|model baru|kebaruan/.test(lowerText);
-            const midNovelty = /gap research|kontribusi|perbedaan penelitian|urgensi/.test(lowerText);
+            // 1. BAHASA (Max 15)
+            const isEnglish = /abstract|research|background|methodology/.test(lowerText) && !/abstrak|penelitian|latar belakang/.test(lowerText);
+            score += isEnglish ? 15 : 8;
 
-            if (isEnglish) score += 10; // Bonus bahasa untuk target S1/S2
+            // 2. NOVELTY & GAP (Max 30)
+            const highNovelty = /state-of-the-art|novelty|originality|eksperimen kompleks|kebaruan/.test(lowerText);
+            const midNovelty = /gap research|kontribusi|perbedaan penelitian|urgensi/.test(lowerText);
             if (highNovelty) score += 30;
             else if (midNovelty) score += 20;
             else score += 10;
 
-            // 2. STRUKTUR IMRAD (Max 30)
+            // 3. IMRAD STRUCTURE (Max 25)
             const sections = {
                 abs: /abstract|abstrak/.test(lowerText),
                 intro: /introduction|pendahuluan/.test(lowerText),
@@ -114,52 +117,46 @@
                 con: /conclusion|kesimpulan/.test(lowerText)
             };
             const sectionCount = Object.values(sections).filter(Boolean).length;
-            score += (sectionCount / 6) * 30;
+            score += (sectionCount / 6) * 25;
 
-            // 3. REFERENSI & SITASI (Max 30)
-            const refs = (text.match(/\[\d+\]|\(\d{4}\)/g) || []).length;
-            const uniqueRefs = [...new Set(text.match(/\[\d+\]|\(\d{4}\)/g) || [])].length;
-            
-            if (uniqueRefs > 25) score += 30;
-            else if (uniqueRefs > 15) score += 20;
-            else if (uniqueRefs > 8) score += 10;
+            // 4. REFERENCES (Max 30)
+            const refs = [...new Set(text.match(/\[\d+\]|\(\d{4}\)/g) || [])].length;
+            if (refs > 25) score += 30;
+            else if (refs > 15) score += 20;
+            else if (refs > 5) score += 10;
             else score += 5;
 
-            // DISPLAY LOGIC
+            // LOGIKA PREDIKSI RENTANG (LOGIKA SCRIPT SEBELUMNYA)
             let level = ""; let color = ""; let advice = "";
             const finalScore = Math.min(Math.round(score), 100);
 
-            if (finalScore >= 85) { 
-                level = "SINTA 1"; color = "#ef4444"; 
-                advice = "Artikel ELITE. Memiliki Novelty tinggi & standar Internasional. Sangat cocok untuk jurnal bereputasi Scopus/WoS.";
-            } else if (finalScore >= 70) { 
-                level = "SINTA 2"; color = "#f59e0b"; 
-                advice = "SANGAT BAIK. Struktur & metodologi sudah solid. Perkuat sitasi internasional untuk menaikkan nilai substansi.";
-            } else if (finalScore >= 60) { 
-                level = "SINTA 3"; color = "#10b981"; 
-                advice = "BAIK & KREDIBEL. Penulisan sudah analitis. Cocok untuk jurnal nasional dengan reputasi stabil.";
-            } else if (finalScore >= 50) { 
-                level = "SINTA 4"; color = "#3b82f6"; 
-                advice = "CUKUP (NASIONAL). Topik relevan namun pembahasan masih bersifat deskriptif. Tingkatkan analisis data Anda.";
-            } else if (finalScore >= 40) { 
-                level = "SINTA 5"; color = "#6366f1"; 
-                advice = "MINIMAL TERAKREDITASI. Struktur sudah benar, namun kontribusi riset masih kecil. Tambahkan referensi jurnal terbaru.";
-            } else { 
-                level = "SINTA 6"; color = "#64748b"; 
-                advice = "DASAR. Artikel cenderung bersifat dokumentatif. Perkuat Gap Research di bagian Pendahuluan.";
+            if (finalScore >= 85) {
+                level = "SINTA 1"; color = "#ef4444";
+                advice = "Artikel ELITE. Kebaruan sangat kuat dan ditulis dengan bahasa Inggris akademik yang baik.";
+            } else if (finalScore >= 70) {
+                level = "SINTA 2"; color = "#f59e0b";
+                advice = "SANGAT BAIK. Metodologi solid. Tingkatkan kualitas sitasi internasional untuk tembus SINTA 1.";
+            } else if (finalScore >= 55) {
+                level = "SINTA 3-4"; color = "#10b981";
+                advice = "BAIK & KREDIBEL. Penulisan sudah standar nasional. Perdalam analisis di bagian Pembahasan (Discussion).";
+            } else {
+                level = "SINTA 5-6"; color = "#64748b";
+                advice = "TINGKAT DASAR. Fokus pada penguatan Gap Research di Pendahuluan dan perbanyak referensi jurnal.";
             }
 
+            // UPDATE UI
             document.getElementById('resLevel').innerText = level;
             document.getElementById('resLevel').style.color = color;
             document.getElementById('scoreBadge').style.backgroundColor = color;
             document.getElementById('scoreValue').innerText = finalScore;
             
-            document.getElementById('statNovelty').innerText = highNovelty ? "Tinggi" : (midNovelty ? "Sedang" : "Dasar");
+            document.getElementById('statLang').innerText = isEnglish ? "Inggris" : "Indonesia";
+            document.getElementById('statRefs').innerText = refs + " Sitasi";
             document.getElementById('statImrad').innerText = sectionCount + "/6 Lengkap";
-            document.getElementById('statRefs').innerText = uniqueRefs + " Referensi";
+            document.getElementById('statNovelty').innerText = highNovelty ? "Tinggi" : (midNovelty ? "Sedang" : "Dasar");
 
             const advCard = document.getElementById('adviceCard');
-            advCard.style.backgroundColor = color + '15';
+            advCard.style.backgroundColor = color + '10';
             advCard.style.borderColor = color;
             document.getElementById('adviceText').innerText = advice;
         }
