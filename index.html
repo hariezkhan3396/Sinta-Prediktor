@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SINTA Expert Predictor - Ver. 2.0</title>
+    <title>SINTA Expert Predictor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -16,7 +16,7 @@
     <div class="max-w-5xl mx-auto">
         <div class="text-center mb-10">
             <h1 class="text-3xl font-extrabold text-slate-900">SINTA <span class="text-indigo-600">Expert Predictor</span></h1>
-            <p class="text-slate-500 mt-2 font-medium">Analisis Prediksi Kualitas Arikel</p>
+            <p class="text-slate-500 mt-2 font-medium">Analisis Prediksi Kualitas Artikel</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -82,11 +82,11 @@
             const words = text.trim().split(/\s+/).length;
             let score = 0;
 
-            // 1. BAHASA (Lebih Adil untuk Bahasa Indonesia Berkualitas)
+            // 1. BAHASA (Bobot Berimbang)
             const isEnglish = /abstract|research|background|methodology/.test(lowerText) && !/abstrak|penelitian|latar belakang/.test(lowerText);
-            score += isEnglish ? 25 : 15; // Jurnal S2 Indo tetap dihargai tinggi
+            score += isEnglish ? 25 : 15;
 
-            // 2. NOVELTY & TEKNIS (Ditambah Kata Kunci JST/ANN Bapak)
+            // 2. NOVELTY & TEKNIS (Kekuatan Metodologi)
             const highTech = /jaringan syaraf tiruan|neural network|backpropagation|forecasting|prakiraan|optimization|modeling/.test(lowerText);
             const highNovelty = /state-of-the-art|novelty|originality|eksperimen kompleks|kebaruan/.test(lowerText);
             
@@ -94,7 +94,7 @@
             else if (highNovelty) score += 20;
             else score += 10;
 
-            // 3. IMRAD (Fleksibel Hasil & Pembahasan Digabung)
+            // 3. IMRAD (Fleksibilitas Struktur)
             const sections = {
                 abs: /abstract|abstrak/.test(lowerText),
                 intro: /introduction|pendahuluan/.test(lowerText),
@@ -103,11 +103,9 @@
                 con: /conclusion|kesimpulan/.test(lowerText)
             };
             const sectionCount = Object.values(sections).filter(Boolean).length;
-            // Jika ada Hasil & Pembahasan digabung, bobotnya tetap besar
             score += (sectionCount >= 4) ? 25 : 10;
 
-            // 4. REFERENSI (Sangat Penting untuk SINTA 2)
-            // Rumus deteksi (Nama, Tahun) atau [Angka]
+            // 4. REFERENSI (Sitasi Unik)
             const citationPattern = /\[[\d, \-]+\]|\(\b(?:[A-Z][a-z]+(?:\s+et\s+al\.)?|[\w\s,]+)\s*,\s*\d{4}\)|\(\d{4}\)/g;
             const allMatches = text.match(citationPattern) || [];
             const uniqueRefs = [...new Set(allMatches)].length;
@@ -116,20 +114,19 @@
             else if (uniqueRefs >= 10) score += 15;
             else score += 5;
 
-            // DISPLAY LOGIC
+            // DISPLAY LOGIC (RENTANG SINTA)
             let level = ""; let color = ""; let advice = "";
             const finalScore = Math.min(Math.round(score), 100);
 
-            // Ambang batas disesuaikan agar SINTA 2 lebih konsisten
             if (finalScore >= 80) {
                 level = "SINTA 1-2"; color = "#ef4444";
-                advice = "Artikel SANGAT KUAT. Metodologi (seperti JST) dan struktur sudah memenuhi standar jurnal peringkat atas.";
+                advice = "Struktur dan bobot artikel sudah standar internasional. Layak kirim ke jurnal bereputasi tinggi.";
             } else if (finalScore >= 60) {
                 level = "SINTA 3-4"; color = "#10b981";
-                advice = "BAIK & KREDIBEL. Penulisan sudah standar nasional. Tingkatkan kualitas sitasi internasional agar tembus SINTA 2.";
+                advice = "Kualitas artikel sudah standar nasional terakreditasi. Perbaiki sitasi agar lebih update.";
             } else {
                 level = "SINTA 5-6"; color = "#64748b";
-                advice = "TINGKAT DASAR. Artikel cenderung deskriptif. Perkuat Gap Research dan Pembahasan analitis.";
+                advice = "Draf artikel memenuhi kriteria dasar. Fokus pada penguatan Gap Research dan perbanyak referensi jurnal internasional.";
             }
 
             document.getElementById('resLevel').innerText = level;
