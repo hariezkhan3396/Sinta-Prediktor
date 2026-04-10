@@ -60,4 +60,97 @@
                         </div>
                     </div>
 
-                    <div id="adviceCard" class
+                    <div id="adviceCard" class="p-6 rounded-2xl border-l-8">
+                        <h4 class="font-black text-slate-800 mb-2 text-[10px] uppercase tracking-widest italic">Catatan Reviewer:</h4>
+                        <p id="adviceText" class="text-sm italic leading-relaxed text-slate-600"></p>
+                    </div>
+
+                    <button onclick="location.reload()" class="w-full mt-8 text-slate-400 hover:text-indigo-600 text-[10px] font-black uppercase tracking-widest transition-colors">Ulangi Analisis</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-16 text-center">
+            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.4em]">
+                Pendamping Publikasi Dosen • Indonesia
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function analyzeText() {
+            const text = document.getElementById('inputText').value;
+            if (text.length < 300) return alert("Manuskrip terlalu pendek untuk dianalisis.");
+
+            document.getElementById('welcomeMessage').classList.add('hidden');
+            document.getElementById('resultArea').classList.remove('hidden');
+
+            const lowerText = text.toLowerCase();
+            const words = text.trim().split(/\s+/).length;
+            
+            // 1. CEK IMRAD
+            const sections = {
+                intro: /introduction|pendahuluan/.test(lowerText),
+                method: /method|metode/.test(lowerText),
+                results: /result|hasil/.test(lowerText),
+                discussion: /discussion|pembahasan/.test(lowerText),
+                conclusion: /conclusion|kesimpulan/.test(lowerText)
+            };
+            const sectionCount = Object.values(sections).filter(Boolean).length;
+            
+            // 2. CEK BAHASA
+            const isEnglish = /abstract|research|background/.test(lowerText) && !/abstrak|penelitian|latar belakang/.test(lowerText);
+            
+            // 3. CEK REFERENSI (Unique Refs)
+            const citationPattern = /\[[\d, \-]+\]|\(\b(?:[A-Z][a-z]+(?:\s+et\s+al\.)?|[\w\s,]+)\s*,\s*\d{4}\)|\(\d{4}\)/g;
+            const allMatches = text.match(citationPattern) || [];
+            const refsCount = [...new Set(allMatches)].length;
+
+            // --- LOGIKA SKOR ASLI BAPAK (STRICT) ---
+            let score = 0;
+            if (isEnglish) score += 25;
+            
+            if (words > 3000) score += 20; 
+            else if (words > 1500) score += 10;
+            
+            // Skor maksimal jika > 20 (Persis permintaan Bapak)
+            if (refsCount > 20) score += 30; 
+            else if (refsCount > 10) score += 15;
+            else score += 5;
+            
+            if (sectionCount >= 4) score += 25;
+
+            // --- KLASIFIKASI PENENTUAN LEVEL ---
+            let level = "SINTA 5-6";
+            let color = "#64748b";
+            let advice = "Draf artikel memenuhi kriteria dasar. Fokus pada penguatan Gap Research dan perbanyak referensi jurnal internasional terbaru.";
+
+            if (score >= 80) { 
+                level = "SINTA 1"; color = "#ef4444"; 
+                advice = "Luar biasa! Struktur dan bobot artikel sudah standar internasional. Sangat potensial untuk jurnal bereputasi tinggi.";
+            } else if (score >= 65) { 
+                level = "SINTA 2"; color = "#f59e0b"; 
+                advice = "Sangat baik. Tambahkan analisis lebih dalam di bagian pembahasan (discussion) untuk memperkuat kontribusi substansi.";
+            } else if (score >= 50) { 
+                level = "SINTA 3-4"; color = "#10b981"; 
+                advice = "Kualitas artikel sudah standar nasional terakreditasi. Perlu penguatan pada kemutakhiran referensi.";
+            }
+
+            // UPDATE TAMPILAN (UI)
+            document.getElementById('resLevel').innerText = level;
+            document.getElementById('resLevel').style.color = color;
+            document.getElementById('scoreBadge').style.backgroundColor = color;
+            document.getElementById('scoreValue').innerText = score;
+            
+            document.getElementById('statWords').innerText = words + " Kata";
+            document.getElementById('statImrad').innerText = sectionCount + "/5 Bagian";
+            document.getElementById('statRefs').innerText = refsCount + " Referensi Unik";
+
+            const advCard = document.getElementById('adviceCard');
+            advCard.style.backgroundColor = color + '15';
+            advCard.style.borderColor = color;
+            document.getElementById('adviceText').innerText = advice;
+        }
+    </script>
+</body>
+</html>
